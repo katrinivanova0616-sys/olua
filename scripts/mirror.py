@@ -28,16 +28,31 @@ for i in ids:
         print("thumb failed", i, e)
 
 html = open(os.environ["SRC_HTML"], encoding="utf-8").read() if os.environ.get("SRC_HTML") else get("/").decode("utf-8")
+# (old string, new string, required)
 subs = [
-    ("const API='/api/state';", "const API='state.json';"),
-    ("im.src='/api/thumb/'+encodeURIComponent(x.id);", "im.src='thumbs/'+encodeURIComponent(x.id)+'.jpg';"),
-    ("canWrite=true; loaded=true;", "canWrite=false; loaded=true;"),
-    ("body.appendChild(row); box.appendChild(body);", "body.appendChild(row);} box.appendChild(body);"),
-    ("const row=el('div','btnrow'); const e=el('button','pill','Изменить');", "if(canWrite){const row=el('div','btnrow'); const e=el('button','pill','Изменить');"),
+    ("const API='/api/state';", "const API='state.json';", True),
+    ("im.src='/api/thumb/'+encodeURIComponent(x.id);", "im.src='thumbs/'+encodeURIComponent(x.id)+'.jpg';", False),
+    ("const TH=id=>'/api/thumb/'+encodeURIComponent(id);", "const TH=id=>'thumbs/'+encodeURIComponent(id)+'.jpg';", False),
+    ("canWrite=true; loaded=true;", "canWrite=false; loaded=true;", True),
+    ("body.appendChild(row); box.appendChild(body);", "body.appendChild(row);} box.appendChild(body);", True),
+    ("const row=el('div','btnrow'); const e=el('button','pill','Изменить');", "if(canWrite){const row=el('div','btnrow'); const e=el('button','pill','Изменить');", True),
 ]
-for a, b in subs:
+for a, b, req in subs:
     if a not in html:
-        raise SystemExit("page changed, missing: " + a)
+        if req:
+            raise SystemExit("page changed, missing: " + a)
+        continue
     html = html.replace(a, b)
+if "/api/thumb/" in html:
+    raise SystemExit("thumb url not rewritten")
+
+# App icon and manifest for "add to home screen".
+src_dir = os.environ.get("SRC_DIR")
+for name in ("icon.png", "icon-512.png", "manifest.webmanifest"):
+    try:
+        data = open(os.path.join(src_dir, name), "rb").read() if src_dir else get("/" + name)
+        open(name, "wb").write(data)
+    except Exception as e:
+        print("asset failed", name, e)
 open("index.html", "w", encoding="utf-8").write(html)
 print("ok", len(ids), "thumbs")
