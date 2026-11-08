@@ -180,6 +180,47 @@ button.th:active .pl{transform:scale(.88)}
 .banner{padding:12px 16px;font-size:14px;color:var(--muted)}
 .banner.err{color:var(--red)}
 
+/* reel cards */
+.rlist{display:flex;flex-direction:column;gap:12px}
+.rcard{padding:14px 16px 14px;overflow:hidden}
+.rtop{display:grid;grid-template-columns:54px 1fr auto;gap:12px;align-items:center}
+.rtop .nonum{width:54px}
+.rno{font-size:12px;font-weight:700;color:var(--accent);letter-spacing:.02em}
+.rtl{font-size:18px;font-weight:700;letter-spacing:-.015em;line-height:1.2;margin-top:1px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.rtl.dim{color:var(--muted);font-weight:500}
+.rchips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.rc{font-size:12px;font-weight:600;padding:3px 8px;border-radius:99px;background:var(--track);color:var(--fg2);white-space:nowrap}
+.rc.g{background:var(--green-soft);color:var(--green)} .rc.o{background:var(--orange-soft);color:var(--orange)} .rc.v{background:rgba(0,122,255,.12);color:#0A84FF}
+.rprog{text-align:right;line-height:1}
+.rprog b{font-size:30px;font-weight:800;letter-spacing:-.03em}
+.rprog small{font-size:15px;font-weight:600;color:var(--muted)}
+.rcard.full .rprog b{color:var(--green)}
+.rcard .bar10{margin-top:12px}
+.rrange{font-size:13px;color:var(--muted);margin-top:10px}
+.strip{display:flex;gap:10px;overflow-x:auto;margin:8px -16px 0;padding:2px 16px 4px;scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.strip::-webkit-scrollbar{display:none}
+.ctile{appearance:none;border:0;background:none;padding:0;flex:none;width:64px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;scroll-snap-align:start;color:inherit;font:inherit}
+.cimg{position:relative;width:64px;height:110px;border-radius:12px;overflow:hidden;background:var(--track);box-shadow:0 0 0 2px var(--orange);margin:2px 0 5px;transition:transform .15s}
+.ctile:active .cimg{transform:scale(.94)}
+.ctile.published .cimg{box-shadow:0 0 0 2px var(--green)} .ctile.failed .cimg{box-shadow:0 0 0 2px var(--red)}
+.cimg img{width:100%;height:100%;object-fit:cover;display:block}
+.cimg .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.cimg .ph svg{width:40%;opacity:.6}
+.cv{position:absolute;left:0;right:0;bottom:0;padding:10px 4px 4px;font-size:11px;font-weight:700;color:#fff;text-align:center;background:linear-gradient(transparent,rgba(0,0,0,.65))}
+.cd1{font-size:12px;font-weight:700;white-space:nowrap}
+.cd2{font-size:11px;color:var(--muted)}
+.ctile.published .cd1{color:var(--green)}
+.redit{appearance:none;border:0;background:none;color:var(--accent);font-size:14px;font-weight:600;padding:10px 0 0;cursor:pointer}
+.rcard .circles{margin-top:12px}
+.rcard .note{margin-top:10px}
+.blanks{overflow:hidden}
+.bhead{appearance:none;border:0;background:none;width:100%;display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;text-align:left;color:inherit;font:inherit}
+.bt{font-size:16px;font-weight:600;flex:1}
+.bs{font-size:14px;color:var(--muted)}
+.chev.dn{transform:rotate(90deg)}
+.bgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;padding:0 16px 16px}
+.bslot{appearance:none;border:1.5px dashed var(--hair);background:none;border-radius:10px;padding:10px 0;text-align:center;font-size:13px;font-weight:600;color:var(--muted);font-family:inherit}
+
 /* calendar */
 .cal{padding:14px 10px 10px}
 .calh{display:flex;align-items:center;justify-content:space-between;padding:0 6px 10px}
@@ -314,8 +355,8 @@ button.th:active .pl{transform:scale(.88)}
       <button data-f="done" aria-pressed="false">10/10</button>
       <button data-f="todo" aria-pressed="false">В монтаже</button>
     </div>
-    <section class="card list" id="list" aria-label="Рилсы"></section>
-    <p class="hint">Отметки, превью и статистика приходят из ARA сами каждые 2 часа. Нажмите на рилс, чтобы увидеть все копии.</p>
+    <div class="rlist" id="list" aria-label="Рилсы"></div>
+    <p class="hint">Отметки, превью и статистика приходят из ARA сами. Листайте копии вбок, нажмите на любую, чтобы посмотреть.</p>
   </main>
 
 </div>
@@ -449,56 +490,89 @@ button.th:active .pl{transform:scale(.88)}
   }
 
   let showBlank=false;
+  const MON=['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+  const shortDay=t=>{const l=dayLabel(t);if(!/^\d/.test(l))return l;const d=new Date(t);return d.getDate()+' '+MON[d.getMonth()];};
+  function copyTile(x){
+    const b=el('button','ctile '+x.s); b.type='button';
+    b.setAttribute('aria-label',(ST[x.s]||x.s)+', '+dayLabel(x.t)+' в '+hm(x.t));
+    const f=el('span','cimg');
+    const ph=()=>{const s=el('span','ph');s.innerHTML=FILM;return s;};
+    if(x.th){const im=el('img');im.alt='';im.loading='lazy';im.src=TH(x.id);im.onerror=()=>{im.remove();f.prepend(ph());};f.appendChild(im);} else f.appendChild(ph());
+    if(x.s==='published'){f.appendChild(el('span','cv num','▶ '+fmtN(x.v)));}
+    else if(x.s==='failed'){f.appendChild(el('span','cv','ошибка'));}
+    b.appendChild(f);
+    b.appendChild(el('span','cd1',shortDay(x.t)));
+    b.appendChild(el('span','cd2 num',hm(x.t)));
+    b.addEventListener('click',()=>openViewer(x));
+    return b;
+  }
+  function reelCard(r){
+    const c=cnt(r.posts), plan=r.items.filter(isPlan).length, full=c>=PER;
+    const card=el('section','card rcard'+(full?' full':''));
+    const top=el('div','rtop');
+    const first=r.items.find(x=>x.th)||r.items[0];
+    if(first) top.appendChild(thumb(first,54,true)); else top.appendChild(el('div','nonum num','№'+r.n));
+    const info=el('div','rinfo');
+    info.appendChild(el('div','rno num','№'+r.n));
+    info.appendChild(el('div','rtl'+(r.title?'':' dim'),r.title||(r.ready?'Без названия':'Ещё не смонтирован')));
+    const chips=el('div','rchips');
+    const views=r.items.filter(x=>x.s==='published').reduce((a,x)=>a+(x.v||0),0);
+    if(c) chips.appendChild(el('span','rc g num',c+' '+plural(c,'вышла','вышли','вышли')));
+    if(plan) chips.appendChild(el('span','rc o num',plan+' в плане'));
+    if(views) chips.appendChild(el('span','rc v num','▶ '+fmtN(views)));
+    if(!c&&!plan) chips.appendChild(el('span','rc',r.ready?'Готов к выкладке':'Слот свободен'));
+    info.appendChild(chips);
+    top.appendChild(info);
+    const pr=el('div','rprog num'); pr.innerHTML='<b>'+c+'</b><small>/'+PER+'</small>'; top.appendChild(pr);
+    card.appendChild(top);
+    const bar=el('div','bar10');for(let i=0;i<PER;i++) bar.appendChild(el('i',i<c?'p':i<c+plan?'o':''));card.appendChild(bar);
+    if(r.items.length){
+      const its=r.items.map(x=>Object.assign({rt:'№'+r.n+' · '+(r.title||'Рилс')},x));
+      const d1=new Date(its[0].t), d2=new Date(its[its.length-1].t);
+      const fm=d=>d.toLocaleDateString('ru-RU',{day:'numeric',month:'long'});
+      card.appendChild(el('div','rrange',(dkey(d1)===dkey(d2)?fm(d1):fm(d1)+' → '+fm(d2))+' · '+its.length+' '+plural(its.length,'копия','копии','копий')));
+      const strip=el('div','strip');
+      its.forEach(x=>strip.appendChild(copyTile(x)));
+      card.appendChild(strip);
+      const nx=its.findIndex(x=>isPlan(x)&&new Date(x.t)>=Date.now()-30*60e3);
+      if(nx>0) requestAnimationFrame(()=>{const t=strip.children[nx]; if(t) strip.scrollLeft=Math.max(0,t.offsetLeft-strip.offsetLeft-60);});
+    } else if(!r.auto && (r.ready||c)){
+      const g=el('div','circles');
+      r.posts.forEach((v,i)=>{const b=el('button','circ'+(v?' on':''));b.type='button';b.innerHTML=CHECK;b.disabled=!canWrite;
+        b.setAttribute('aria-label','Публикация '+(i+1)+(v?', выложена':''));b.addEventListener('click',()=>toggle(r.id,i));g.appendChild(b);});
+      card.appendChild(g); card.appendChild(el('div','note','Копий в ARA пока нет. Можно отметить вручную.'));
+    } else card.appendChild(el('div','note','Копий в ARA пока нет. Появятся сами, когда ролик поставят в ARA.'));
+    if(canWrite){const e=el('button','redit','Изменить'); e.type='button'; e.addEventListener('click',()=>openSheet(r.id)); card.appendChild(e);}
+    return card;
+  }
   function renderList(){
     document.querySelectorAll('[data-f]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.f===filter)));
-    const L=$('list'); L.textContent=''; let shown=0, active=0, hidden=0, firstBlank=true;
+    const L=$('list'); const keep=L.querySelectorAll('.strip'); const sx={}; keep.forEach(x=>{const c=x.closest('[data-id]');if(c)sx[c.dataset.id]=x.scrollLeft;});
+    L.textContent=''; let shown=0, active=0; const blanks=[];
     ids.forEach(id=>{
       const r=get(id), c=cnt(r.posts), plan=r.items.filter(isPlan).length, full=c>=PER;
       if(r.ready||c||plan) active++;
       const st=full?'done':(r.ready||plan)?'go':'todo';
       if(filter!=='all'&&filter!==st) return;
-      if(filter==='all'&&!showBlank&&!r.ready&&!c&&!plan&&!r.title){if(!firstBlank){hidden++;return;}firstBlank=false;}
+      if(!r.ready&&!c&&!plan&&!r.title&&!r.items.length){blanks.push(r);return;}
       shown++;
-      const isOpen=open.has(id);
-      const box=el('div','reel'+(full?' full':'')+(isOpen?' open':''));
-      const h=el('button','rhead'); h.type='button'; h.setAttribute('aria-expanded',String(isOpen));
-      const first=r.items.find(x=>x.th)||r.items[0];
-      if(first) h.appendChild(thumb(Object.assign({},first,{url:''}),46)); else h.appendChild(el('div','nonum num','＋'));
-      const mid=el('div'); mid.style.minWidth='0';
-      {const t=el('div','rt'+(r.title?'':' dim'));t.appendChild(el('span','rn num','№'+r.n));t.appendChild(document.createTextNode(r.title||(r.ready?'Без названия':'Ещё не смонтирован')));mid.appendChild(t);}
-      const views=r.items.filter(x=>x.s==='published').reduce((a,x)=>a+(x.v||0),0);
-      const parts=[]; if(c)parts.push(c+' '+plural(c,'вышла','вышли','вышли')); if(plan)parts.push(plan+' в плане'); if(views)parts.push(fmtN(views)+' просм.');
-      if(!parts.length) parts.push(r.ready?'Готов к выкладке':'Слот свободен');
-      mid.appendChild(el('div','rs',parts.join(' · ')));
-      if(r.ready||c||plan){const b=el('div','bar10');for(let i=0;i<PER;i++) b.appendChild(el('i',i<c?'p':i<c+plan?'o':''));mid.appendChild(b);}
-      h.appendChild(mid);
-      const rc=el('div','rc'); rc.innerHTML='<b class="num">'+c+'</b><span class="num">/'+PER+'</span>'+CHEV; h.appendChild(rc);
-      h.addEventListener('click',()=>{isOpen?open.delete(id):open.add(id);renderList();});
-      box.appendChild(h);
-      if(isOpen){
-        const body=el('div','body');
-        if(r.items.length){
-          const ul=el('ul','cps');
-          r.items.forEach(x=>{const li=el('li');li.appendChild(el('span','dot '+x.s));
-            const w=el('span','w',(ST[x.s]||x.s)+' · '+dayLabel(x.t)+' в '+hm(x.t)); if(x.err) w.appendChild(el('span','er',x.err));
-            li.appendChild(w); if(x.s==='published') li.appendChild(el('span','vw num',fmtN(x.v)+' просм.'));
-            if(x.url){const a=el('a',null,'Открыть');a.href=x.url;a.target='_blank';a.rel='noopener';li.appendChild(a);}
-            ul.appendChild(li);});
-          body.appendChild(ul);
-        } else if(!r.auto && (r.ready||c)){
-          const g=el('div','circles');
-          r.posts.forEach((v,i)=>{const b=el('button','circ'+(v?' on':''));b.type='button';b.innerHTML=CHECK;b.disabled=!canWrite;
-            b.setAttribute('aria-label','Публикация '+(i+1)+(v?', выложена':''));b.addEventListener('click',()=>toggle(id,i));g.appendChild(b);});
-          body.appendChild(g); body.appendChild(el('div','note','Копий в ARA пока нет. Можно отметить вручную.'));
-        } else body.appendChild(el('div','note','Копий в ARA пока нет. Появятся сами, когда ролик поставят в ARA.'));
-        if(canWrite){const row=el('div','btnrow'); const e=el('button','pill','Изменить'); e.type='button'; e.addEventListener('click',()=>openSheet(id)); row.appendChild(e);
-        body.appendChild(row);} box.appendChild(body);
-      }
-      L.appendChild(box);
+      const card=reelCard(r); card.dataset.id=id; L.appendChild(card);
+      if(sx[id]!=null){const s=card.querySelector('.strip'); if(s) requestAnimationFrame(()=>{s.scrollLeft=sx[id];});}
     });
+    if(blanks.length){
+      const bc=el('section','card blanks');
+      const h=el('button','bhead'); h.type='button';
+      const a=blanks[0].n, z=blanks[blanks.length-1].n;
+      h.appendChild(el('span','bt','Свободные слоты'));
+      h.appendChild(el('span','bs num',blanks.length+' · №'+a+(z!==a?'–'+z:'')));
+      h.insertAdjacentHTML('beforeend',CHEV.replace('class="chev"','class="chev'+(showBlank?' dn':'')+'"'));
+      h.addEventListener('click',()=>{showBlank=!showBlank;renderList();});
+      bc.appendChild(h);
+      if(showBlank){const g=el('div','bgrid'); blanks.forEach(r=>{const b=el(canWrite?'button':'span','bslot num','№'+r.n); if(canWrite){b.type='button';b.addEventListener('click',()=>openSheet(r.id));} g.appendChild(b);}); bc.appendChild(g);}
+      L.appendChild(bc); shown++;
+    }
     $('listCount').textContent=active+' в работе';
-    if(hidden){const m=el('button','more','Ещё '+hidden+' '+plural(hidden,'пустой слот','пустых слота','пустых слотов'));m.type='button';m.addEventListener('click',()=>{showBlank=true;renderList();});L.appendChild(m);}
-    if(!shown) L.appendChild(el('div','empty','В этом разделе пока пусто.'));
+    if(!shown) L.appendChild(el('div','card empty','В этом разделе пока пусто.'));
   }
 
   function renderCal(){
