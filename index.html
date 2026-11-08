@@ -87,6 +87,18 @@ h1{margin:2px 0 0;font-size:34px;line-height:1.08;font-weight:700;letter-spacing
 .total .tv span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 .total .tv small{font-size:22px;font-weight:600;color:var(--muted);letter-spacing:0;margin-left:2px}
 .total .ts{font-size:15px;color:var(--muted);margin-top:2px}
+.lg[data-ls],.total[data-ls]{cursor:pointer;border-radius:12px;transition:transform .15s,background .15s;-webkit-tap-highlight-color:transparent}
+.lg[data-ls]:active,.total[data-ls]:active{transform:scale(.97)}
+.lsheet{position:fixed;inset:0;z-index:35;background:rgba(0,0,0,.4);display:flex;align-items:flex-end;justify-content:center;animation:vin .2s ease}
+.lsbox{background:var(--bg);width:100%;max-width:600px;max-height:88vh;border-radius:16px 16px 0 0;display:flex;flex-direction:column;animation:lsup .35s cubic-bezier(.2,.8,.2,1)}
+@keyframes lsup{from{transform:translateY(40%)}to{transform:none}}
+.lshead{display:flex;align-items:center;justify-content:space-between;padding:8px 16px 10px;position:relative}
+.lshead h2{margin:14px 0 0;font-size:22px;font-weight:700;letter-spacing:-.015em}
+.lshead h2 small{display:block;font-size:13px;font-weight:500;color:var(--muted);letter-spacing:0;margin-top:2px}
+.lshead .grab{position:absolute;top:6px;left:50%;margin-left:-18px}
+.lsx{appearance:none;border:0;background:var(--track);color:var(--fg2);width:30px;height:30px;border-radius:50%;font-size:18px;line-height:1;cursor:pointer;margin-top:10px}
+.lsscroll{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 16px calc(20px + env(safe-area-inset-bottom,0px))}
+.lsday{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.02em;margin:14px 4px 6px}
 .legend{display:flex;flex-direction:column;gap:12px;min-width:0}
 .lg .k{font-size:13px;font-weight:600;color:var(--fg2)}
 .lg .v{font-size:24px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
@@ -253,7 +265,7 @@ button.th:active .pl{transform:scale(.88)}
 
   <main id="viewList" class="section">
     <section class="card rings" aria-label="Итог">
-      <div class="total"><div class="tk">Всего постов</div><div class="tv num"><span id="sAll">—</span><small>/300</small></div><div class="ts" id="sAllSub"></div></div>
+      <div class="total" role="button" tabindex="0" data-ls="all"><div class="tk">Всего постов ›</div><div class="tv num"><span id="sAll">—</span><small>/300</small></div><div class="ts" id="sAllSub"></div></div>
       <svg viewBox="0 0 150 150" aria-hidden="true">
         <circle cx="75" cy="75" r="64" stroke="var(--green-soft)" stroke-width="14"/>
         <circle id="ringOut" cx="75" cy="75" r="64" stroke="var(--green)" stroke-width="14" stroke-dasharray="402.1" stroke-dashoffset="402.1"/>
@@ -263,8 +275,8 @@ button.th:active .pl{transform:scale(.88)}
         <circle id="ringReady" cx="75" cy="75" r="30" stroke="var(--accent)" stroke-width="14" stroke-dasharray="188.5" stroke-dashoffset="188.5"/>
       </svg>
       <div class="legend">
-        <div class="lg g"><div class="k">Выложено</div><div class="v num"><span id="sOut">—</span><small>/300</small></div></div>
-        <div class="lg o"><div class="k">Запланировано</div><div class="v num" id="sPlan">—</div></div>
+        <div class="lg g" role="button" tabindex="0" data-ls="pub"><div class="k">Выложено ›</div><div class="v num"><span id="sOut">—</span><small>/300</small></div></div>
+        <div class="lg o" role="button" tabindex="0" data-ls="plan"><div class="k">Запланировано ›</div><div class="v num" id="sPlan">—</div></div>
         <div class="lg p"><div class="k">Смонтировано</div><div class="v num"><span id="sReady">—</span><small>/30</small></div></div>
       </div>
       <div class="pace" id="pace"></div>
@@ -314,6 +326,13 @@ button.th:active .pl{transform:scale(.88)}
     <button class="vclose" id="vClose" type="button" aria-label="Закрыть">×</button>
     <div class="verr" id="vErr" hidden>Видео пока готовится в ARA</div>
     <div class="vbar"><div class="vt" id="vTitle"></div><a class="pill" id="vOpen" target="_blank" rel="noopener">Открыть в Instagram</a></div>
+  </div>
+</div>
+
+<div class="lsheet" id="lsheet" hidden role="dialog" aria-modal="true" aria-labelledby="lsTitle">
+  <div class="lsbox">
+    <div class="lshead"><div class="grab"></div><h2 id="lsTitle"></h2><button class="lsx" id="lsClose" type="button" aria-label="Закрыть">×</button></div>
+    <div class="lsscroll" id="lsList"></div>
   </div>
 </div>
 
@@ -380,7 +399,7 @@ button.th:active .pl{transform:scale(.88)}
     $('viewer').hidden=false; document.body.style.overflow='hidden';
     const pr=v.play(); if(pr&&pr.catch) pr.catch(()=>{});
   }
-  function closeViewer(){const v=$('vid');v.pause();v.removeAttribute('src');v.load();$('viewer').hidden=true;document.body.style.overflow='';}
+  function closeViewer(){const v=$('vid');v.pause();v.removeAttribute('src');v.load();$('viewer').hidden=true;if($('lsheet').hidden) document.body.style.overflow='';}
   function allPosts(){
     const out=[];
     ids.forEach(id=>{const r=get(id);r.items.forEach(x=>out.push(Object.assign({rt:'№'+r.n+' · '+(r.title||'Рилс')},x)));});
@@ -509,7 +528,9 @@ button.th:active .pl{transform:scale(.88)}
     $('dayCount').textContent=[pub?pub+' '+plural(pub,'вышла','вышли','вышли'):'',pl?pl+' в плане':''].filter(Boolean).join(' · ');
     const L=$('dayList'); L.textContent='';
     if(!sel.length){L.appendChild(el('div','empty','В этот день публикаций нет.'));return;}
-    sel.forEach(x=>{
+    sel.forEach(x=>L.appendChild(postRow(x)));
+  }
+  function postRow(x){
       const row=el('div','post'); row.appendChild(thumb(x,76,true));
       const b=el('div'); b.style.minWidth='0';
       const m=el('div','pm'); m.append(el('span','chip '+x.s,ST[x.s]||x.s),el('span','num',hm(x.t))); b.appendChild(m);
@@ -520,9 +541,20 @@ button.th:active .pl{transform:scale(.88)}
       if(x.s==='published') f.appendChild(el('span','num',fmtN(x.v)+' просм. · '+fmtN(x.l)+' лайк. · '+fmtN(x.sv)+' сохр.'));
       if(x.url){const a=el('a',null,'Открыть');a.href=x.url;a.target='_blank';a.rel='noopener';f.appendChild(a);}
       if(f.childNodes.length) b.appendChild(f);
-      row.appendChild(b); L.appendChild(row);
-    });
+      row.appendChild(b); return row;
   }
+  function openList(kind){
+    const all=allPosts(); const L=$('lsList'); L.textContent='';
+    const sel=kind==='pub'?all.filter(x=>x.s==='published').reverse():kind==='plan'?all.filter(isPlan):all;
+    const T={pub:'Выложено',plan:'Запланировано',all:'Все посты'}[kind];
+    const views=sel.reduce((a,x)=>a+(x.s==='published'?(x.v||0):0),0);
+    $('lsTitle').textContent=T; $('lsTitle').appendChild(el('small',null,sel.length+' '+plural(sel.length,'пост','поста','постов')+(views?' · '+fmtN(views)+' просм.':'')));
+    if(!sel.length) L.appendChild(el('div','empty','Пока пусто.'));
+    let day='', card=null;
+    sel.forEach(x=>{const k=dkey(new Date(x.t)); if(k!==day){day=k; const d=new Date(x.t); L.appendChild(el('div','lsday',dayLabel(x.t)==='сегодня'||dayLabel(x.t)==='завтра'||dayLabel(x.t)==='вчера'?dayLabel(x.t)+', '+d.toLocaleDateString('ru-RU',{day:'numeric',month:'long'}):d.toLocaleDateString('ru-RU',{weekday:'long',day:'numeric',month:'long'}))); card=el('section','card'); L.appendChild(card);} card.appendChild(postRow(x));});
+    $('lsheet').hidden=false; document.body.style.overflow='hidden'; L.scrollTop=0;
+  }
+  function closeList(){$('lsheet').hidden=true; if($('viewer').hidden) document.body.style.overflow='';}
 
   function render(){ renderTop(); renderList(); renderCal(); }
   function setView(v){
@@ -541,6 +573,10 @@ button.th:active .pl{transform:scale(.88)}
     $('sheetTitle').textContent='Рилс №'+r.n; $('inTitle').value=r.title; $('inReady').checked=r.ready||cnt(r.posts)>0||r.items.length>0;
     $('scrim').hidden=false; setTimeout(()=>$('inTitle').focus(),50); }
   function closeSheet(){ $('scrim').hidden=true; editing=null; }
+  document.querySelectorAll('[data-ls]').forEach(b=>{b.addEventListener('click',()=>openList(b.dataset.ls)); b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openList(b.dataset.ls);}});});
+  $('lsClose').onclick=closeList;
+  $('lsheet').addEventListener('click',e=>{if(e.target===$('lsheet'))closeList();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('viewer').hidden&&!$('lsheet').hidden)closeList();});
   $('vClose').onclick=closeViewer;
   $('viewer').addEventListener('click',e=>{if(e.target===$('viewer'))closeViewer();});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('viewer').hidden)closeViewer();});
