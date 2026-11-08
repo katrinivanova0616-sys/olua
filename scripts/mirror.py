@@ -27,7 +27,7 @@ for i in ids:
     except Exception as e:
         print("thumb failed", i, e)
 
-html = get("/").decode("utf-8")
+html = open(os.environ["SRC_HTML"], encoding="utf-8").read() if os.environ.get("SRC_HTML") else get("/").decode("utf-8")
 subs = [
     ("const API='/api/state';", "const API='state.json';"),
     ("im.src='/api/thumb/'+encodeURIComponent(x.id);", "im.src='thumbs/'+encodeURIComponent(x.id)+'.jpg';"),
