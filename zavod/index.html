@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Контент-завод</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Завод">
+<meta name="theme-color" content="#F4EEF8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#07060D" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="../icon.png">
+<link rel="icon" href="../icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{
+  --fg:#000;--fg2:#3C3C43;--muted:rgba(60,60,67,.6);--hair:rgba(60,60,67,.14);
+  --accent:#E8335A;--accent-soft:rgba(232,51,90,.12);
+  --green:#34C759;--green-soft:rgba(52,199,89,.15);--orange:#FF9500;--orange-soft:rgba(255,149,0,.15);--red:#FF3B30;
+  --track:rgba(120,120,128,.16);
+  --cardg:rgba(255,255,255,.55);--cardb:rgba(255,255,255,.75);--spec:rgba(255,255,255,.8);
+  --glow1:rgba(255,111,163,.55);--glow2:rgba(142,92,255,.42);--glow3:rgba(79,163,255,.38);--glow4:rgba(255,179,122,.45);--base:#F4EEF8;
+  --grad:linear-gradient(120deg,#FF5E78,#D6249F 55%,#6E30DC);
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Helvetica Neue",system-ui,sans-serif;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 8px 28px rgba(120,20,80,.08);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --fg:#fff;--fg2:#EBEBF5;--muted:rgba(235,235,245,.6);--hair:rgba(84,84,88,.5);
+  --accent:#FF375F;--accent-soft:rgba(255,55,95,.2);--green:#30D158;--green-soft:rgba(48,209,88,.2);--orange:#FF9F0A;--orange-soft:rgba(255,159,10,.2);--red:#FF453A;
+  --track:rgba(120,120,128,.32);--cardg:rgba(36,34,48,.5);--cardb:rgba(255,255,255,.14);--spec:rgba(255,255,255,.2);
+  --glow1:rgba(255,45,120,.5);--glow2:rgba(120,70,255,.48);--glow3:rgba(40,120,255,.4);--glow4:rgba(255,120,60,.28);--base:#07060D;--shadow:none;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --fg:#fff;--fg2:#EBEBF5;--muted:rgba(235,235,245,.6);--hair:rgba(84,84,88,.5);
+  --accent:#FF375F;--accent-soft:rgba(255,55,95,.2);--green:#30D158;--green-soft:rgba(48,209,88,.2);--orange:#FF9F0A;--orange-soft:rgba(255,159,10,.2);--red:#FF453A;
+  --track:rgba(120,120,128,.32);--cardg:rgba(36,34,48,.5);--cardb:rgba(255,255,255,.14);--spec:rgba(255,255,255,.2);
+  --glow1:rgba(255,45,120,.5);--glow2:rgba(120,70,255,.48);--glow3:rgba(40,120,255,.4);--glow4:rgba(255,120,60,.28);--base:#07060D;--shadow:none;color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--base);color:var(--fg);font-family:var(--font);font-size:17px;line-height:1.3;-webkit-font-smoothing:antialiased;
+  padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) calc(96px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));overflow-x:hidden}
+body::before,body::after{content:"";position:fixed;inset:-25%;z-index:-1;pointer-events:none;filter:blur(30px)}
+body::before{background:radial-gradient(30% 26% at 18% 12%,var(--glow1),transparent 70%),radial-gradient(28% 24% at 88% 22%,var(--glow2),transparent 70%),radial-gradient(34% 30% at 30% 78%,var(--glow3),transparent 70%);animation:d1 28s ease-in-out infinite alternate}
+body::after{background:radial-gradient(26% 22% at 80% 70%,var(--glow4),transparent 70%),radial-gradient(24% 20% at 55% 40%,var(--glow1),transparent 72%);opacity:.8;animation:d2 34s ease-in-out infinite alternate}
+@keyframes d1{to{transform:translate3d(6%,8%,0) rotate(8deg)}}
+@keyframes d2{to{transform:translate3d(-8%,-6%,0) rotate(-10deg)}}
+@media (prefers-reduced-motion:reduce){body::before,body::after{animation:none}}
+.wrap{max-width:640px;margin:0 auto}
+button,a{font:inherit;color:inherit}
+a{text-decoration:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+.num{font-variant-numeric:tabular-nums}
+
+.top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding:20px 4px 14px}
+.eyebrow{font-size:13px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:var(--muted)}
+h1{margin:2px 0 0;font-size:34px;line-height:1.08;font-weight:700;letter-spacing:-.025em}
+h2{font-size:22px;font-weight:700;letter-spacing:-.02em;margin:26px 4px 10px}
+.avatar{width:42px;height:42px;border-radius:12px;flex:none;background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fdf497 5%,#fd5949 45%,#d6249f 60%,#285AEB 90%);color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(214,36,159,.35)}
+
+.card{background:var(--cardg);-webkit-backdrop-filter:saturate(200%) blur(28px);backdrop-filter:saturate(200%) blur(28px);border:1px solid var(--cardb);box-shadow:inset 0 1px 0 var(--spec),var(--shadow);border-radius:22px;padding:16px}
+.card+.card{margin-top:12px}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.row{display:flex;align-items:center;gap:12px}
+.grow{flex:1;min-width:0}
+.ell{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* hero */
+.hero{display:flex;gap:18px;align-items:center}
+.ring{width:108px;height:108px;flex:none;position:relative}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .lbl{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .big{font-size:28px;font-weight:700;letter-spacing:-.02em;line-height:1}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;flex:1}
+.stat b{display:block;font-size:22px;letter-spacing:-.02em}
+.stat span{font-size:13px;color:var(--muted)}
+
+/* steps */
+.steps{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:2px 0}
+.steps::-webkit-scrollbar{display:none}
+.step{flex:none;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;padding:8px 12px;border-radius:99px;background:var(--track)}
+.step i{font-style:normal;width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:11px}
+
+/* list */
+.list{padding:4px 0}
+.item{display:flex;gap:12px;align-items:center;padding:10px 16px}
+.item+.item{border-top:1px solid var(--hair)}
+.thumb{width:48px;height:64px;border-radius:10px;object-fit:cover;background:var(--track);flex:none}
+.thumb.sm{width:36px;height:48px;border-radius:8px}
+.title{font-weight:600;font-size:16px}
+.badge{display:inline-block;font-size:12px;font-weight:600;padding:3px 8px;border-radius:99px;background:var(--green-soft);color:var(--green)}
+.badge.o{background:var(--orange-soft);color:var(--orange)}
+.badge.a{background:var(--accent-soft);color:var(--accent)}
+.bars{display:flex;gap:3px;margin-top:6px}
+.bars span{flex:1;height:5px;border-radius:3px;background:var(--track)}
+.bars .p{background:var(--green)}.bars .s{background:var(--orange)}.bars .e{background:var(--red)}
+
+.btn{appearance:none;border:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:600;font-size:15px;padding:10px 16px;border-radius:99px;background:var(--accent);color:#fff;box-shadow:0 6px 18px rgba(232,51,90,.3);white-space:nowrap}
+.btn.ghost{background:var(--accent-soft);color:var(--accent);box-shadow:none}
+.btn.wide{width:100%;padding:14px 18px;font-size:17px}
+.btn.grad{background:var(--grad)}
+.empty{text-align:center;padding:18px 8px}
+.empty p{margin:0 0 12px}
+
+.day{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.02em;padding:12px 16px 2px}
+
+details summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"›";font-size:22px;color:var(--muted);transition:transform .2s}
+details[open] summary::after{transform:rotate(90deg)}
+.rules{margin:10px 0 0;padding-left:18px;font-size:15px;color:var(--fg2)}
+.rules li+li{margin-top:6px}
+
+/* chat */
+.chathero{text-align:center;padding:26px 18px}
+.orb{width:76px;height:76px;margin:0 auto 14px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ff8fb0,#E8335A 45%,#7a1030);box-shadow:0 10px 30px rgba(232,51,90,.45),inset 0 -6px 14px rgba(0,0,0,.25),inset 0 4px 10px rgba(255,255,255,.35);animation:float 5s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-6px)}}
+.cmd{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer}
+.cmd+.cmd{border-top:1px solid var(--hair)}
+.cmd code{font-family:inherit;font-weight:600}
+.cmd .ic{width:34px;height:34px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;flex:none;font-size:17px}
+
+/* dashboard frame */
+.frame{position:fixed;inset:0;bottom:calc(76px + env(safe-area-inset-bottom,0px));border:0;width:100%;height:calc(100% - 76px - env(safe-area-inset-bottom,0px));background:transparent;z-index:1}
+.framebar{position:fixed;right:16px;top:calc(10px + env(safe-area-inset-top,0px));z-index:5}
+
+/* tab bar */
+.tabs{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:50;display:grid;grid-template-columns:repeat(4,1fr);gap:2px;width:min(440px,calc(100% - 24px));padding:5px;border-radius:28px;
+  background:var(--cardg);-webkit-backdrop-filter:saturate(200%) blur(30px);backdrop-filter:saturate(200%) blur(30px);border:1px solid var(--cardb);box-shadow:inset 0 1px 0 var(--spec),0 10px 34px rgba(60,20,110,.2)}
+.tabs a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 2px 6px;border-radius:22px;font-size:11px;font-weight:600;color:var(--muted);transition:background .2s,color .2s}
+.tabs a svg{width:24px;height:24px}
+.tabs a[aria-current="page"]{color:var(--accent);background:var(--accent-soft)}
+
+.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;z-index:60;background:rgba(20,20,24,.88);color:#fff;font-size:14px;padding:10px 16px;border-radius:14px;max-width:calc(100% - 32px);transition:opacity .25s,transform .25s;pointer-events:none;text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.fade{animation:fade .35s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<section id="p-montazh" hidden>
+  <header class="top"><div><div class="eyebrow">Контент-завод</div><h1>Монтаж</h1></div><a class="avatar" href="https://www.instagram.com/olga_klein_music/" target="_blank" rel="noopener" aria-label="Instagram @olga_klein_music">OK</a></header>
+  <div class="card hero">
+    <div class="ring" id="ring"></div>
+    <div class="stats">
+      <div class="stat"><b class="num" id="m-left">–</b><span>осталось до цели</span></div>
+      <div class="stat"><b class="num" id="m-days">–</b><span>дней в работе</span></div>
+      <div class="stat"><b class="num" id="m-pace">–</b><span>рилса в день</span></div>
+      <div class="stat"><b class="num" id="m-eta">–</b><span>цель при таком темпе</span></div>
+    </div>
+  </div>
+
+  <h2>В работе</h2>
+  <div class="card" id="wip"></div>
+
+  <h2>Как идёт монтаж</h2>
+  <div class="card">
+    <div class="steps">
+      <span class="step"><i>1</i>Исходник</span><span class="step"><i>2</i>Расшифровка</span><span class="step"><i>3</i>Раскадровка</span><span class="step"><i>4</i>Твоё «да»</span><span class="step"><i>5</i>Рендер</span><span class="step"><i>6</i>Чек-лист</span>
+    </div>
+    <p class="small muted" style="margin:12px 2px 0" id="style"></p>
+  </div>
+
+  <h2>Готовые рилсы</h2>
+  <div class="card list" id="done" style="padding:4px 0"></div>
+</section>
+
+<section id="p-dash" hidden>
+  <iframe class="frame" id="frame" title="Трекер рилсов" loading="lazy"></iframe>
+</section>
+
+<section id="p-post" hidden>
+  <header class="top"><div><div class="eyebrow">Контент-завод</div><h1>Автопостинг</h1></div><a class="avatar" href="https://www.instagram.com/olga_klein_music/" target="_blank" rel="noopener" aria-label="Instagram @olga_klein_music">OK</a></header>
+  <div class="card">
+    <div class="stats" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat"><b class="num" id="a-pub">–</b><span>выложено</span></div>
+      <div class="stat"><b class="num" id="a-sch">–</b><span>в очереди</span></div>
+      <div class="stat"><b class="num" id="a-err">–</b><span>ошибок</span></div>
+    </div>
+    <div class="row" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--hair)" id="a-next"></div>
+  </div>
+
+  <h2>Выложить новый рилс</h2>
+  <div class="card" id="a-new"></div>
+
+  <h2>Ближайшие 7 дней</h2>
+  <div class="card list" id="a-week" style="padding:4px 0"></div>
+
+  <h2>По рилсам</h2>
+  <div class="card list" id="a-reels" style="padding:4px 0"></div>
+
+  <h2>Регламент</h2>
+  <div class="card">
+    <details>
+      <summary>Как я выкладываю по слову «пости»</summary>
+      <ol class="rules">
+        <li>Только @olga_klein_music, Instagram Reels, 10 копий на ролик.</li>
+        <li>У каждой копии своя подпись в стиле Ольги, в конце «👉 Анкета предзаписи в шапке профиля», без хэштегов.</li>
+        <li>Шаг 12 часов, окна 08:00–13:00 и 17:00–23:00 по Москве, не ближе 30 минут к другим постам.</li>
+        <li>Уникализация с рамками, пробный режим, AI-метка выключена.</li>
+        <li>Сначала показываю сводку с ценой. Публикую только после твоего «да».</li>
+        <li>Через 15 минут присылаю отчёт и обновляю трекер.</li>
+      </ol>
+    </details>
+  </div>
+  <p class="small muted" style="margin:14px 4px 0" id="a-sync"></p>
+</section>
+
+<section id="p-claude" hidden>
+  <header class="top"><div><div class="eyebrow">Контент-завод</div><h1>Claude</h1></div><a class="avatar" href="https://www.instagram.com/olga_klein_music/" target="_blank" rel="noopener" aria-label="Instagram @olga_klein_music">OK</a></header>
+  <div class="card chathero">
+    <div class="orb" aria-hidden="true"></div>
+    <div class="title" style="font-size:20px">Чат с Claude</div>
+    <p class="muted" style="margin:6px 0 18px;font-size:15px">Переписка идёт в проекте «монтаж для ольги». Там я монтирую, веду чек-лист и выкладываю в ARA.</p>
+    <a class="btn wide grad js-open" href="#" target="_blank" rel="noopener">Открыть чат</a>
+  </div>
+  <h2>Быстрые команды</h2>
+  <p class="small muted" style="margin:-4px 4px 10px">Нажми: команда скопируется, чат откроется. Вставь её и допиши.</p>
+  <div class="card list" id="cmds" style="padding:4px 0"></div>
+</section>
+
+</div>
+
+<nav class="tabs" aria-label="Разделы">
+  <a href="#montazh" data-p="montazh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9.5v5l4-2.5z" fill="currentColor"/></svg>Монтаж</a>
+  <a href="#dash" data-p="dash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 19V11M12 19V5M19 19v-6"/></svg>Дашборд</a>
+  <a href="#post" data-p="post"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l16-8-6 16-3-7z"/></svg>Постинг</a>
+  <a href="#claude" data-p="claude"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 6a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-6l-5 4v-4a3 3 0 0 1-2-3z"/></svg>Claude</a>
+</nav>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const CHAT='https://claude.ai/code/project/chan_01Wnpdm1uggCsTrXjhe23x7r';
+const TZ='Europe/Moscow';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const TH=id=>'../thumbs/'+encodeURIComponent(id)+'.jpg';
+const fmt=(t,o)=>new Date(t).toLocaleString('ru-RU',Object.assign({timeZone:TZ},o));
+const dayKey=t=>new Date(t).toLocaleDateString('sv-SE',{timeZone:TZ});
+const plural=(n,a,b,c)=>{const m=n%10,h=n%100;return m==1&&h!=11?a:m>=2&&m<=4&&(h<10||h>=20)?b:c};
+
+document.querySelectorAll('.js-open').forEach(a=>a.href=CHAT);
+
+let toastT;
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2600)}
+function copy(text){
+  try{navigator.clipboard.writeText(text)}catch(e){
+    const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(_){}ta.remove();
+  }
+  toast('Скопировано: «'+text.trim()+'». Вставь в чат');
+}
+// Anchor that copies a command and opens the chat in the same tap.
+function cmdLink(text,label,cls){return `<a class="${cls||'btn'}" href="${CHAT}" target="_blank" rel="noopener" data-copy="${esc(text)}">${label}</a>`}
+document.addEventListener('click',e=>{const a=e.target.closest('[data-copy]');if(a)copy(a.dataset.copy)});
+
+/* routing */
+const PAGES=['montazh','dash','post','claude'];
+function route(){
+  const p=PAGES.includes(location.hash.slice(1))?location.hash.slice(1):'montazh';
+  PAGES.forEach(x=>{const s=$('p-'+x);s.hidden=x!==p;if(x===p)s.classList.add('fade')});
+  document.querySelectorAll('.tabs a').forEach(a=>a.dataset.p===p?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'));
+  if(p==='dash'&&!$('frame').src)$('frame').src='../';
+  document.body.style.overflow=p==='dash'?'hidden':'';
+  window.scrollTo(0,0);
+}
+addEventListener('hashchange',route);route();
+
+/* data */
+Promise.all([
+  fetch('../state.json',{cache:'no-store'}).then(r=>r.json()),
+  fetch('montazh.json',{cache:'no-store'}).then(r=>r.json()).catch(()=>({goal:30,start:'2026-11-07',reels:{},wip:[]}))
+]).then(([state,mz])=>{
+  const reels=Object.entries(state.reels||{}).map(([k,r])=>Object.assign({key:k},r)).sort((a,b)=>a.n-b.n);
+  renderMontazh(reels,mz);renderPost(reels,state.meta||{});renderCmds(reels);
+}).catch(()=>{['done','wip','a-week','a-reels','a-new','cmds'].forEach(id=>$(id).innerHTML='<div class="empty muted">Не получилось загрузить данные. Обнови страницу.</div>');renderCmds([])});
+
+function cover(r){const it=(r.items||[]).find(x=>x.th);return it?`<img class="thumb" loading="lazy" src="${TH(it.id)}" alt="">`:'<div class="thumb"></div>'}
+
+function renderMontazh(reels,mz){
+  const ready=reels.filter(r=>r.ready),n=ready.length,goal=mz.goal||30;
+  const C=2*Math.PI*46,pct=Math.min(1,n/goal);
+  $('ring').innerHTML=`<svg viewBox="0 0 108 108"><circle cx="54" cy="54" r="46" fill="none" stroke="var(--track)" stroke-width="12"/><circle cx="54" cy="54" r="46" fill="none" stroke="url(#g)" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C*pct} ${C}"/><defs><linearGradient id="g"><stop offset="0" stop-color="#FF5E78"/><stop offset="1" stop-color="#D6249F"/></linearGradient></defs></svg><div class="lbl"><span class="big num">${n}</span><span class="small muted">из ${goal}</span></div>`;
+  const start=new Date(mz.start+'T00:00:00+03:00'),days=Math.max(1,Math.ceil((Date.now()-start)/864e5));
+  const pace=n/days;
+  $('m-left').textContent=Math.max(0,goal-n);
+  $('m-days').textContent=days;
+  $('m-pace').textContent=pace.toFixed(1).replace('.',',');
+  $('m-eta').textContent=pace>0?new Date(start.getTime()+Math.ceil(goal/pace)*864e5).toLocaleDateString('ru-RU',{day:'numeric',month:'short',timeZone:TZ}):'–';
+  $('style').textContent='Стиль по умолчанию '+(mz.style||'v5')+'. Исходник идёт целиком, в исходном порядке.';
+
+  const wip=mz.wip||[];
+  $('wip').innerHTML=wip.length?wip.map(w=>`<div class="row" style="padding:4px 0"><div class="grow"><div class="title ell">${esc(w.title)}</div><div class="small muted">${esc(w.stage||'')}</div></div>${cmdLink('Правки к «'+w.title+'»: ','Правки','btn ghost')}</div>`).join('')
+    :`<div class="empty"><p class="muted">Сейчас ничего не монтируется. Пришли следующий исходник, и я начну с расшифровки и раскадровки.</p>${cmdLink('Новый исходник для рилса №'+(n+1)+': ','Прислать исходник')}</div>`;
+
+  $('done').innerHTML=ready.length?ready.slice().reverse().map(r=>{
+    const m=(mz.reels||{})[r.key]||{};
+    const meta=[r.dur?Math.round(r.dur)+' с':'',m.versions?m.versions+' '+plural(m.versions,'версия','версии','версий'):'',m.done?new Date(m.done+'T12:00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'long'}):''].filter(Boolean).join(' · ');
+    return `<div class="item">${cover(r)}<div class="grow"><div class="small muted num">№${r.n}</div><div class="title ell">${esc(r.title)}</div><div class="small muted">${meta}</div></div>${cmdLink('Правки к рилсу №'+r.n+' «'+r.title+'»: ','Правки','btn ghost')}</div>`
+  }).join(''):'<div class="empty muted">Пока нет готовых рилсов</div>';
+}
+
+function renderPost(reels,meta){
+  const all=reels.flatMap(r=>(r.items||[]).map(x=>Object.assign({reel:r},x)));
+  const pub=all.filter(x=>x.s==='published'),sch=all.filter(x=>x.s==='scheduled'),err=all.filter(x=>x.s==='error'||x.err);
+  $('a-pub').textContent=pub.length;$('a-sch').textContent=sch.length;$('a-err').textContent=err.length;
+  const now=Date.now(),up=sch.filter(x=>new Date(x.t)>now).sort((a,b)=>new Date(a.t)-new Date(b.t));
+  const nx=up[0];
+  $('a-next').innerHTML=nx?`<img class="thumb sm" src="${TH(nx.id)}" alt="" onerror="this.style.visibility='hidden'"><div class="grow"><div class="small muted">Следующий пост</div><div class="title ell">${esc(nx.reel.title)}</div></div><div class="badge o num">${fmt(nx.t,{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>`
+    :'<div class="muted small">В очереди пока пусто</div>';
+
+  const fresh=reels.filter(r=>r.ready&&!(r.items||[]).length);
+  $('a-new').innerHTML=fresh.length?fresh.map(r=>`<div class="row" style="padding:6px 0"><div class="grow"><div class="small muted">№${r.n}</div><div class="title ell">${esc(r.title)}</div></div>${cmdLink('пости '+r.title.toLowerCase(),'Пости')}</div>`).join('')
+    :`<div class="empty"><p class="muted">Все готовые рилсы уже в очереди. Когда смонтирую новый, он появится здесь с кнопкой «Пости».</p>${cmdLink('пости ','Написать «пости»','btn ghost')}</div>`;
+
+  const end=now+7*864e5,week=up.filter(x=>new Date(x.t)<end),byDay={};
+  week.forEach(x=>(byDay[dayKey(x.t)]=byDay[dayKey(x.t)]||[]).push(x));
+  const dayHtml=([d,xs])=>`<div class="day">${fmt(xs[0].t,{weekday:'long',day:'numeric',month:'long'})}</div>`+xs.map(x=>{
+    const i=x.reel.items.indexOf(x.reel.items.find(y=>y.id===x.id))+1;
+    return `<div class="item"><img class="thumb sm" loading="lazy" src="${TH(x.id)}" alt="" onerror="this.style.visibility='hidden'"><div class="grow"><div class="title ell">${esc(x.reel.title)}</div><div class="small muted">копия ${i} из ${x.reel.items.length}</div></div><div class="num" style="font-weight:600">${fmt(x.t,{hour:'2-digit',minute:'2-digit'})}</div></div>`}).join('');
+  const days=Object.entries(byDay),first=days.slice(0,2),rest=days.slice(2),restN=rest.reduce((a,[,xs])=>a+xs.length,0);
+  $('a-week').innerHTML=week.length?first.map(dayHtml).join('')+(rest.length?`<div id="a-more" hidden>${rest.map(dayHtml).join('')}</div><div style="padding:10px 16px 8px"><button class="btn ghost" style="width:100%" onclick="this.parentNode.remove();$('a-more').hidden=false">Ещё ${restN} ${plural(restN,'пост','поста','постов')} на неделе</button></div>`:'')
+    :'<div class="empty muted">На неделю ничего не запланировано</div>';
+
+  $('a-reels').innerHTML=reels.map(r=>{
+    const it=(r.items||[]),p=it.filter(x=>x.s==='published').length,s=it.filter(x=>x.s==='scheduled').length,v=it.reduce((a,x)=>a+(x.v||0),0);
+    const bars=Array.from({length:Math.max(10,it.length)},(_,i)=>{const x=it[i];return `<span class="${x?(x.err||x.s==='error'?'e':x.s==='published'?'p':'s'):''}"></span>`}).join('');
+    return `<div class="item">${cover(r)}<div class="grow"><div class="title ell">${esc(r.title)}</div><div class="small muted num">${p} выложено · ${s} в очереди${v?' · '+v.toLocaleString('ru-RU')+' просм.':''}</div><div class="bars">${bars}</div></div></div>`}).join('')||'<div class="empty muted">Нет рилсов</div>';
+
+  if(meta.synced)$('a-sync').textContent='Данные из ARA обновлены '+fmt(meta.synced,{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'})+' по Москве. Обновляются сами каждые 30 минут.';
+}
+
+function renderCmds(reels){
+  const last=reels.filter(r=>r.ready).slice(-1)[0];
+  const cmds=[
+    ['🎬','Новый исходник','Новый исходник: ','Пришли видео, сделаю раскадровку'],
+    ['🚀','пости <название>','пости '+(last?last.title.toLowerCase():''),'Выложить рилс в ARA по регламенту'],
+    ['✂️','Правки','Правки к рилсу №'+(last?last.n:'')+': ','Что поменять в монтаже'],
+    ['📊','Как дела у рилсов?','Как дела у рилсов? Что залетает лучше всего?','Разбор просмотров и сохранений'],
+    ['✍️','Подписи','Напиши 10 новых подписей для рилса ','В стиле Ольги, без хэштегов'],
+  ];
+  $('cmds').innerHTML=cmds.map(([ic,t,c,d])=>`<a class="cmd" href="${CHAT}" target="_blank" rel="noopener" data-copy="${esc(c)}"><span class="ic">${ic}</span><span class="grow"><code>${esc(t)}</code><div class="small muted">${esc(d)}</div></span><span class="muted">›</span></a>`).join('');
+}
+</script>
+</body>
+</html>
