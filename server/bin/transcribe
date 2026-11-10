@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+"""Транскрибирует видео/аудио через faster-whisper. Печатает JSON: сегменты и слова с таймкодами.
+Использование: transcribe <файл> [--model small] [--out result.json]"""
+import argparse, json, sys
+from faster_whisper import WhisperModel
+
+p = argparse.ArgumentParser()
+p.add_argument("path")
+p.add_argument("--model", default="small")
+p.add_argument("--lang", default="ru")
+p.add_argument("--out")
+a = p.parse_args()
+
+model = WhisperModel(a.model, device="cpu", compute_type="int8")
+segments, info = model.transcribe(a.path, language=a.lang, word_timestamps=True, vad_filter=True)
+res = {"language": info.language, "duration": info.duration, "segments": []}
+for s in segments:
+    res["segments"].append({
+        "start": round(s.start, 2), "end": round(s.end, 2), "text": s.text.strip(),
+        "words": [{"w": w.word.strip(), "s": round(w.start, 2), "e": round(w.end, 2)} for w in (s.words or [])],
+    })
+out = json.dumps(res, ensure_ascii=False, indent=1)
+if a.out:
+    open(a.out, "w", encoding="utf-8").write(out)
+    print(f"saved {a.out}: {len(res['segments'])} segments, {res['duration']:.1f}s")
+else:
+    sys.stdout.write(out)
