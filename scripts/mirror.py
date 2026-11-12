@@ -34,7 +34,7 @@ subs = [
     ("im.src='/api/thumb/'+encodeURIComponent(x.id);", "im.src='thumbs/'+encodeURIComponent(x.id)+'.jpg';", False),
     ("const TH=id=>'/api/thumb/'+encodeURIComponent(id);", "const TH=id=>'thumbs/'+encodeURIComponent(id)+'.jpg';", False),
     ("canWrite=true; loaded=true;", "canWrite=false; loaded=true;", True),
-    ("</style>\n</head>", "</style>\n<link rel=\"stylesheet\" href=\"glass-apple.css\">\n</head>", True),
+    ("</style>\n</head>", "</style>\n<link rel=\"stylesheet\" href=\"glass-apple.css\">\n<link rel=\"stylesheet\" href=\"extras.css\">\n<script src=\"extras.js\" defer></script>\n</head>", True),
     ('content="#F4EEF8"', 'content="#E8EDF5"', False),
     ('content="#07060D"', 'content="#05070D"', False),
     ("body.appendChild(row); box.appendChild(body);", "body.appendChild(row);} box.appendChild(body);", False),

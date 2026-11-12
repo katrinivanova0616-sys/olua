@@ -1,0 +1,74 @@
+/* Styles for extras.js: tabs, "Сегодня", "Лучшее время". Uses the theme tokens from glass-apple.css. */
+#viewList[data-tab="ov"]>[data-t]:not([data-t="ov"]),#viewList[data-tab="cal"]>[data-t]:not([data-t="cal"]),
+#viewList[data-tab="reels"]>[data-t]:not([data-t="reels"]),#viewList[data-tab="stats"]>[data-t]:not([data-t="stats"]){display:none}
+#viewList[data-tab]>.h2:first-child,#viewList[data-tab]>[data-t]:not(.h2)+.h2{margin-top:8px}
+#viewList [hidden]{display:none!important}
+body.has-xtabs{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
+
+/* tab bar: floating glass capsule */
+.xtabs{--cardg:rgba(255,255,255,.72);position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:25;width:min(calc(100% - 28px),440px);
+  display:grid;grid-template-columns:repeat(4,1fr);gap:2px;padding:6px;border-radius:99px;
+  background:var(--cardg);-webkit-backdrop-filter:blur(30px) saturate(190%);backdrop-filter:blur(30px) saturate(190%);
+  box-shadow:inset 0 1px 1px var(--spec),inset 0 -1px 1px var(--spec2),inset 0 0 0 1px var(--cardb),0 14px 40px -10px rgba(20,40,100,.3)}
+.xtabs button{appearance:none;border:0;background:transparent;color:var(--fg2);font:inherit;font-size:10.5px;font-weight:600;letter-spacing:.01em;
+  display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 2px 6px;border-radius:99px;cursor:pointer;transition:background .2s,color .2s,transform .15s;-webkit-tap-highlight-color:transparent}
+.xtabs button svg{width:24px;height:24px}
+.xtabs button:active{transform:scale(.94)}
+.xtabs button[aria-current="page"]{color:var(--accent);background:rgba(255,255,255,.7);box-shadow:inset 0 1px 1px #fff,inset 0 0 0 1px rgba(255,255,255,.9),0 4px 14px -6px rgba(20,40,100,.3)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .xtabs button[aria-current="page"]{background:rgba(255,255,255,.14);box-shadow:inset 0 1px 1px rgba(255,255,255,.3)}}
+:root[data-theme="dark"] .xtabs button[aria-current="page"]{background:rgba(255,255,255,.14);box-shadow:inset 0 1px 1px rgba(255,255,255,.3)}
+
+/* shared bits */
+.xhead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 20px 4px}
+.xcap{font-size:22px;font-weight:700;letter-spacing:-.02em}
+.xsum{font-size:14px;color:var(--muted);margin-top:2px}
+.xfoot{font-size:13px;color:var(--muted);padding:12px 20px 16px;line-height:1.4;border-top:.5px solid var(--hair);margin-top:10px}
+.xth{appearance:none;border:0;padding:0;width:36px;height:52px;border-radius:9px;overflow:hidden;background:var(--track);flex:none;cursor:pointer}
+.xth img{width:100%;height:100%;object-fit:cover;display:block}
+.xrow{display:flex;align-items:center;gap:12px;padding:8px 20px}
+.xrb{min-width:0;flex:1}
+.xrt{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.xrs{font-size:13px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* today */
+.xcd{text-align:right;line-height:1.1}
+.xcd b{display:block;font-size:22px;font-weight:700;letter-spacing:-.02em;color:var(--accent)}
+.xcd small{font-size:12px;color:var(--muted)}
+.xfail{margin:10px 12px 0;padding:6px 0 6px;border-radius:20px;background:var(--red-soft,rgba(255,59,48,.12));box-shadow:inset 0 0 0 1px rgba(255,59,48,.18)}
+.xfailt{font-size:14px;font-weight:700;color:var(--red);padding:8px 16px 2px}
+.xfail .xrow{padding:6px 16px}
+.xfail .xrs{color:var(--red);opacity:.85}
+.xline{position:relative;margin-top:6px}
+.xline .xrow{padding:7px 20px 7px 16px}
+.xtime{width:42px;font-size:14px;font-weight:600;color:var(--fg2);flex:none;text-align:right}
+.xdot{width:10px;height:10px;border-radius:50%;flex:none;background:var(--orange);box-shadow:0 0 0 3px var(--orange-soft,rgba(255,149,0,.18))}
+.xrow.done .xdot{background:var(--green);box-shadow:0 0 0 3px var(--green-soft,rgba(52,199,89,.18))}
+.xrow.done .xtime{color:var(--muted)}
+.xrow.next{background:var(--accent-soft);border-radius:16px;margin:0 8px;padding-left:8px;padding-right:12px}
+.xrow.next .xdot{background:var(--accent);box-shadow:0 0 0 3px rgba(0,122,255,.25);animation:xpulse 1.8s ease-in-out infinite}
+.xrow.next .xrs{color:var(--accent);font-weight:600}
+@keyframes xpulse{50%{box-shadow:0 0 0 7px rgba(0,122,255,0)}}
+
+/* best time */
+.xbesthero{display:flex;align-items:baseline;gap:10px;padding:8px 20px 4px;flex-wrap:wrap}
+.xbesthero b{font-size:44px;font-weight:700;letter-spacing:-.04em;color:var(--accent);line-height:1}
+.xbesthero span{font-size:14px;color:var(--muted)}
+.xbars{display:flex;align-items:flex-end;gap:6px;height:150px;padding:14px 20px 0;overflow-x:auto;scrollbar-width:none}
+.xbars::-webkit-scrollbar{display:none}
+.xbar{flex:1 0 26px;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px}
+.xbar i{width:100%;max-width:30px;border-radius:9px 9px 5px 5px;background:var(--track);box-shadow:inset 0 1px 0 var(--spec2);transition:height .8s cubic-bezier(.2,.8,.2,1)}
+.xbar.top i{background:rgba(0,122,255,.35)}
+.xbar.win i{background:linear-gradient(180deg,#5AB0FF,var(--accent));box-shadow:inset 0 1px 1px rgba(255,255,255,.5),0 6px 14px -6px rgba(0,122,255,.7)}
+.xbar .xv{font-size:10.5px;font-weight:600;color:var(--muted)}
+.xbar.win .xv{color:var(--accent)}
+.xbar .xl{font-size:11px;color:var(--muted);font-weight:600}
+.xdays{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding:16px 14px 0}
+.xday{display:flex;flex-direction:column;align-items:center;gap:4px}
+.xday i{--p:0;width:34px;height:34px;border-radius:50%;background:conic-gradient(var(--accent) calc(var(--p)*1%),var(--track) 0);
+  -webkit-mask:radial-gradient(circle,transparent 11px,#000 12px);mask:radial-gradient(circle,transparent 11px,#000 12px)}
+.xday .xl{font-size:12px;font-weight:600;color:var(--fg2)}
+.xday .xv{font-size:11px;color:var(--muted)}
+.xday.off{opacity:.45}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .xtabs{--cardg:rgba(30,32,40,.78)}}
+:root[data-theme="dark"] .xtabs{--cardg:rgba(30,32,40,.78)}
+.xmore{appearance:none;border:0;background:none;width:100%;padding:10px 20px 2px;font:inherit;font-size:15px;font-weight:600;color:var(--accent);text-align:left;cursor:pointer}
