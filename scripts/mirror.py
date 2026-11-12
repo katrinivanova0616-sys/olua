@@ -40,6 +40,16 @@ subs = [
     ("body.appendChild(row); box.appendChild(body);", "body.appendChild(row);} box.appendChild(body);", False),
     ("const row=el('div','btnrow'); const e=el('button','pill','Изменить');", "if(canWrite){const row=el('div','btnrow'); const e=el('button','pill','Изменить');", False),
 ]
+# Cache-busting: a new ?v= whenever the theme/feature files change, so phones don't keep stale copies.
+import hashlib
+_h = hashlib.md5()
+for _f in ("glass-apple.css", "extras.css", "extras.js"):
+    try:
+        _h.update(open(_f, "rb").read())
+    except OSError:
+        pass
+VER = _h.hexdigest()[:8]
+subs = [(a, b.replace('glass-apple.css"', f'glass-apple.css?v={VER}"').replace('extras.css"', f'extras.css?v={VER}"').replace('extras.js"', f'extras.js?v={VER}"'), r) for a, b, r in subs]
 for a, b, req in subs:
     if a not in html:
         if req:
