@@ -1,0 +1,111 @@
+/* Variant B: Apple Liquid Glass (iOS 26). Clear glass panels with bright rims floating over a soft wallpaper,
+   system colours and SF typography. Loaded after the page's own <style>; markup and logic are untouched. */
+:root{
+  --base:#E8EDF5; --bg:#E8EDF5; --card:rgba(255,255,255,.7); --card2:rgba(255,255,255,.45); --fg:#000; --fg2:#3C3C43; --muted:rgba(60,60,67,.6); --hair:rgba(60,60,67,.12);
+  --accent:#007AFF; --accent-soft:rgba(0,122,255,.14);
+  --green:#34C759; --orange:#FF9500; --red:#FF3B30;
+  --track:rgba(120,120,128,.14); --glass:rgba(232,237,245,.5);
+  --cardg:rgba(255,255,255,.42); --cardb:rgba(255,255,255,.55); --spec:rgba(255,255,255,.95); --spec2:rgba(255,255,255,.4);
+  --rim:linear-gradient(140deg,rgba(255,255,255,1),rgba(255,255,255,.25) 32%,rgba(255,255,255,.08) 55%,rgba(255,255,255,.7));
+  --drop:0 10px 40px -12px rgba(30,50,110,.18),0 2px 6px rgba(30,50,110,.05);
+  --w1:#9CC8FF; --w2:#C3B5FF; --w3:#A6ECEA; --w4:#FFD3E2;
+  --grad:linear-gradient(90deg,#000,#000);
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --base:#05070D; --bg:#05070D; --card:rgba(255,255,255,.1); --card2:rgba(255,255,255,.07); --fg:#fff; --fg2:#EBEBF5; --muted:rgba(235,235,245,.6); --hair:rgba(255,255,255,.1);
+  --accent:#0A84FF; --accent-soft:rgba(10,132,255,.22); --green:#30D158; --orange:#FF9F0A; --red:#FF453A;
+  --track:rgba(255,255,255,.1); --glass:rgba(5,7,13,.45);
+  --cardg:rgba(255,255,255,.07); --cardb:rgba(255,255,255,.12); --spec:rgba(255,255,255,.28); --spec2:rgba(255,255,255,.06);
+  --rim:linear-gradient(140deg,rgba(255,255,255,.45),rgba(255,255,255,.06) 32%,rgba(255,255,255,.02) 55%,rgba(255,255,255,.25));
+  --drop:0 10px 40px -12px rgba(0,0,0,.6);
+  --w1:#1D4FD6; --w2:#5B2FC9; --w3:#0E7C8C; --w4:#8A2A66; --grad:linear-gradient(90deg,#fff,#fff);
+}}
+:root[data-theme="dark"]{
+  --base:#05070D; --bg:#05070D; --card:rgba(255,255,255,.1); --card2:rgba(255,255,255,.07); --fg:#fff; --fg2:#EBEBF5; --muted:rgba(235,235,245,.6); --hair:rgba(255,255,255,.1);
+  --accent:#0A84FF; --accent-soft:rgba(10,132,255,.22); --green:#30D158; --orange:#FF9F0A; --red:#FF453A;
+  --track:rgba(255,255,255,.1); --glass:rgba(5,7,13,.45);
+  --cardg:rgba(255,255,255,.07); --cardb:rgba(255,255,255,.12); --spec:rgba(255,255,255,.28); --spec2:rgba(255,255,255,.06);
+  --rim:linear-gradient(140deg,rgba(255,255,255,.45),rgba(255,255,255,.06) 32%,rgba(255,255,255,.02) 55%,rgba(255,255,255,.25));
+  --drop:0 10px 40px -12px rgba(0,0,0,.6);
+  --w1:#1D4FD6; --w2:#5B2FC9; --w3:#0E7C8C; --w4:#8A2A66; --grad:linear-gradient(90deg,#fff,#fff);
+}
+
+/* wallpaper: soft, static, iOS-like */
+body{background:var(--base)}
+body::before{inset:-10%;filter:blur(60px);animation:none;opacity:1;
+  background:radial-gradient(45% 35% at 15% 8%,var(--w1),transparent 70%),radial-gradient(40% 32% at 92% 18%,var(--w2),transparent 70%),
+             radial-gradient(50% 36% at 80% 62%,var(--w3),transparent 70%),radial-gradient(45% 34% at 10% 72%,var(--w4),transparent 70%),
+             radial-gradient(40% 30% at 50% 100%,var(--w1),transparent 70%)}
+body::after{display:none}
+
+/* glass: translucent fill, bright refracted rim, light drop */
+.card{background:var(--cardg);border:0;border-radius:30px;
+  -webkit-backdrop-filter:blur(30px) saturate(190%);backdrop-filter:blur(30px) saturate(190%);
+  box-shadow:inset 0 1px 1px var(--spec),inset 0 -1px 1px var(--spec2),var(--drop)}
+.card::before{inset:0;padding:1.2px;border-radius:inherit;background:var(--rim);z-index:1;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+.section{gap:16px}
+.h2{margin:18px 6px -2px}
+.h2 h2{font-size:22px;letter-spacing:-.02em}
+
+/* header */
+.top::before{background:var(--cardg);border:0;border-radius:99px;box-shadow:inset 0 1px 1px var(--spec),inset 0 -1px 1px var(--spec2),var(--drop);
+  -webkit-backdrop-filter:blur(30px) saturate(190%);backdrop-filter:blur(30px) saturate(190%)}
+.avatar{border-radius:50%;background:var(--cardg);color:var(--fg);-webkit-backdrop-filter:blur(20px) saturate(190%);backdrop-filter:blur(20px) saturate(190%);
+  box-shadow:inset 0 1px 1px var(--spec),inset 0 -1px 1px var(--spec2),inset 0 0 0 1px var(--cardb),var(--drop)}
+.avatar svg{stroke:var(--fg)} .avatar svg circle[fill]{fill:var(--fg)}
+.top.stuck .avatar{border-radius:50%}
+
+/* hero: plain Apple-style numbers */
+.rings{padding:20px}
+.total{border-bottom:.5px solid var(--hair)}
+.total .tk{color:var(--muted);font-size:15px;font-weight:500}
+.total .tv{font-size:64px;font-weight:700;letter-spacing:-.04em}
+.total .tv span{background:none;-webkit-background-clip:border-box;background-clip:border-box;color:var(--fg)}
+.lg .k{color:var(--muted);font-weight:500}
+.lg.p .v{color:var(--accent)}
+.pace{border-top:.5px solid var(--hair);margin:2px -20px -20px;padding:14px 20px}
+
+/* segmented control: glass track, lens thumb */
+.bar{background:var(--glass)}
+.seg{background:var(--cardg);border:0;padding:4px;-webkit-backdrop-filter:blur(30px) saturate(190%);backdrop-filter:blur(30px) saturate(190%);
+  box-shadow:inset 0 1px 1px var(--spec),inset 0 -1px 1px var(--spec2),inset 0 0 0 1px var(--cardb),var(--drop)}
+.seg button{color:var(--fg)}
+.seg button[aria-pressed="true"]{background:rgba(255,255,255,.75);color:#000;box-shadow:inset 0 1px 1px #fff,inset 0 0 0 1px rgba(255,255,255,.9),0 4px 14px -4px rgba(30,50,110,.25)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .seg button[aria-pressed="true"]{background:rgba(255,255,255,.18);color:#fff;box-shadow:inset 0 1px 1px rgba(255,255,255,.35)}}
+:root[data-theme="dark"] .seg button[aria-pressed="true"]{background:rgba(255,255,255,.18);color:#fff;box-shadow:inset 0 1px 1px rgba(255,255,255,.35)}
+
+/* stat tiles: iOS app-icon squircles with gloss */
+.tiles{gap:14px}
+.tile{padding:16px 16px 18px}
+.tile .ic{width:34px;height:34px;border-radius:10px;position:relative;overflow:hidden;box-shadow:0 4px 10px -4px rgba(0,0,0,.25)}
+.tile .ic::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.35),rgba(255,255,255,0) 55%)}
+.tile .v{font-size:28px;letter-spacing:-.03em}
+
+/* reels */
+.rlist{gap:14px}
+.rcard{padding:16px}
+.th,.nonum,.cimg{border-radius:14px}
+.rno{color:var(--accent)}
+.rc{background:var(--card2);box-shadow:inset 0 0 0 .5px var(--cardb)}
+.rc.v{background:var(--accent-soft);color:var(--accent)}
+.bar10 i{height:6px;border-radius:99px}
+.cps{background:var(--card2);border-radius:18px}
+
+/* controls */
+.pill{background:var(--card2);color:var(--accent);-webkit-backdrop-filter:blur(20px) saturate(190%);backdrop-filter:blur(20px) saturate(190%);
+  box-shadow:inset 0 1px 1px var(--spec),inset 0 0 0 .5px var(--cardb)}
+.btn{border-radius:99px;background:var(--card2);box-shadow:inset 0 1px 1px var(--spec),inset 0 0 0 .5px var(--cardb)}
+.btn.pr{background:var(--accent);color:#fff;box-shadow:inset 0 1px 1px rgba(255,255,255,.4),0 8px 18px -8px rgba(0,122,255,.7)}
+.lsx{background:var(--card2);box-shadow:inset 0 1px 1px var(--spec)}
+.calh .nav button{background:var(--card2);box-shadow:inset 0 1px 1px var(--spec),inset 0 0 0 .5px var(--cardb);margin-left:6px}
+.day{border-radius:16px}
+.day.today{background:var(--accent-soft)}
+.day.sel .dn{background:var(--accent)}
+
+/* sheets */
+.lsbox{background:var(--cardg);border:0;border-radius:32px 32px 0 0;-webkit-backdrop-filter:blur(40px) saturate(190%);backdrop-filter:blur(40px) saturate(190%);box-shadow:inset 0 1px 1px var(--spec)}
+.sheet{background:var(--glass);-webkit-backdrop-filter:blur(40px) saturate(190%);backdrop-filter:blur(40px) saturate(190%);border-radius:32px 32px 0 0}
+.field input,.trow{background:var(--card);border-radius:14px}
+.vbox video{border-radius:30px}

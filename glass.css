@@ -1,0 +1,131 @@
+/* Liquid Glass theme. Loaded after the page's own <style>, so it only restyles; markup and logic are untouched.
+   Light grey canvas, white raised glass cards with big radii, soft blue gradients, black glossy primary pill. */
+:root{
+  --base:#EEEEF0; --bg:#EEEEF0; --card:#FFFFFF; --card2:#F4F4F6; --fg:#111114; --fg2:#3A3A40; --muted:rgba(60,60,67,.55); --hair:rgba(0,0,0,.07);
+  --accent:#2F7BF5; --accent-soft:rgba(47,123,245,.13);
+  --blue1:#CFE4FF; --blue2:#79B4FA; --blue3:#3A82F0;
+  --track:rgba(0,0,0,.055); --glass:rgba(238,238,240,.72);
+  --cardg:linear-gradient(180deg,rgba(255,255,255,.94),rgba(255,255,255,.80));
+  --cardb:#FFFFFF; --spec:#FFFFFF; --spec2:rgba(255,255,255,.6);
+  --lift:0 1px 2px rgba(0,0,0,.04),0 12px 28px -10px rgba(20,30,60,.16),0 34px 60px -30px rgba(20,30,60,.22);
+  --grad:linear-gradient(120deg,#5AA5FF,#2F7BF5 60%,#1F5FD6);
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Inter","Helvetica Neue",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --base:#0D0E11; --bg:#0D0E11; --card:#1A1B20; --card2:#24252B; --fg:#F5F5F7; --fg2:#D8D8DE; --muted:rgba(235,235,245,.55); --hair:rgba(255,255,255,.08);
+  --accent:#4C90FF; --accent-soft:rgba(76,144,255,.2);
+  --blue1:#5C8FE0; --blue2:#3C74D8; --blue3:#2456B8;
+  --track:rgba(255,255,255,.08); --glass:rgba(13,14,17,.72);
+  --cardg:linear-gradient(180deg,rgba(40,42,50,.82),rgba(28,29,35,.78));
+  --cardb:rgba(255,255,255,.09); --spec:rgba(255,255,255,.12); --spec2:rgba(255,255,255,.04);
+  --lift:0 1px 2px rgba(0,0,0,.3),0 20px 40px -18px rgba(0,0,0,.7);
+}}
+:root[data-theme="dark"]{
+  --base:#0D0E11; --bg:#0D0E11; --card:#1A1B20; --card2:#24252B; --fg:#F5F5F7; --fg2:#D8D8DE; --muted:rgba(235,235,245,.55); --hair:rgba(255,255,255,.08);
+  --accent:#4C90FF; --accent-soft:rgba(76,144,255,.2);
+  --blue1:#5C8FE0; --blue2:#3C74D8; --blue3:#2456B8;
+  --track:rgba(255,255,255,.08); --glass:rgba(13,14,17,.72);
+  --cardg:linear-gradient(180deg,rgba(40,42,50,.82),rgba(28,29,35,.78));
+  --cardb:rgba(255,255,255,.09); --spec:rgba(255,255,255,.12); --spec2:rgba(255,255,255,.04);
+  --lift:0 1px 2px rgba(0,0,0,.3),0 20px 40px -18px rgba(0,0,0,.7);
+}
+
+body{background:var(--base);letter-spacing:-.005em}
+/* calm canvas: one soft blue haze at the top instead of colourful blobs */
+body::before{inset:0;filter:none;animation:none;background:radial-gradient(70% 38% at 50% -6%,rgba(120,175,255,.22),transparent 70%)}
+body::after{display:none}
+
+/* header */
+.top::before{background:var(--cardg);border:1px solid var(--cardb);border-radius:28px;box-shadow:inset 0 1px 0 var(--spec),var(--lift);-webkit-backdrop-filter:saturate(180%) blur(24px);backdrop-filter:saturate(180%) blur(24px)}
+.date{letter-spacing:.06em;font-weight:600}
+.avatar{border-radius:50%;background:radial-gradient(120% 120% at 30% 15%,#D9EAFF 0%,#7DB6FB 45%,#2F7BF5 100%);box-shadow:inset 0 0 0 2px rgba(255,255,255,.85),inset 0 -6px 12px rgba(20,70,170,.25),0 8px 18px -6px rgba(47,123,245,.55)}
+.top.stuck .avatar{border-radius:50%}
+
+/* cards: raised white glass, big radius */
+.card{background:var(--cardg);border:1px solid var(--cardb);border-radius:34px;
+  box-shadow:inset 0 1px 0 var(--spec),inset 0 -1px 0 rgba(0,0,0,.025),var(--lift);
+  -webkit-backdrop-filter:saturate(180%) blur(24px);backdrop-filter:saturate(180%) blur(24px)}
+.card::before{background:linear-gradient(160deg,rgba(255,255,255,.55),transparent 30%)}
+.section{gap:16px}
+.h2{margin:18px 6px -2px}
+.h2 h2{font-size:24px;letter-spacing:-.025em}
+
+/* hero: blue gradient panel like the balance card */
+.rings{padding:10px 10px 18px;grid-template-columns:150px 1fr;column-gap:18px;row-gap:16px}
+.rings>svg{margin-left:8px}
+.total{position:relative;overflow:hidden;border:0;border-radius:26px;padding:18px 20px 20px;text-align:center;color:#fff;
+  background:radial-gradient(90% 120% at 22% 0%,var(--blue1) 0%,var(--blue2) 42%,var(--blue3) 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 -10px 24px rgba(10,50,150,.18),0 14px 28px -14px rgba(47,123,245,.6)}
+.total::after{content:"";position:absolute;left:-20%;right:-20%;top:-60%;height:90%;background:radial-gradient(closest-side,rgba(255,255,255,.45),transparent);pointer-events:none}
+.total .tk{display:inline-block;color:#fff;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;border-radius:99px;
+  background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.55);box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}
+.total .tv{font-size:60px;margin-top:8px;color:#fff;text-shadow:0 2px 12px rgba(10,50,150,.25)}
+.total .tv span{background:none;-webkit-background-clip:border-box;background-clip:border-box;color:#fff}
+.total .tv small{color:rgba(255,255,255,.7)}
+.total .ts{color:rgba(255,255,255,.85)}
+.lg[data-ls]:active,.total[data-ls]:active{transform:scale(.98)}
+.lg{padding:4px 2px}
+.lg .k{color:var(--muted);font-weight:500}
+.pace{margin:0 -10px -18px;padding:14px 20px 4px;border-top:1px solid var(--hair)}
+
+/* inner panels (inset grey, like "Last transaction") */
+.cps,.next{background:transparent}
+.cps{background:var(--card2);border-radius:20px;box-shadow:inset 0 0 0 1px var(--cardb)}
+
+/* segmented controls */
+.bar{background:var(--glass)}
+.seg{background:rgba(0,0,0,.05);border:0;box-shadow:inset 0 1px 2px rgba(0,0,0,.06);-webkit-backdrop-filter:none;backdrop-filter:none;padding:4px}
+.seg button{color:var(--fg2);padding:9px 6px}
+.seg button[aria-pressed="true"]{background:#fff;color:#000;box-shadow:0 1px 2px rgba(0,0,0,.06),0 6px 14px -4px rgba(20,30,60,.18)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .seg{background:rgba(255,255,255,.07)}:root:not([data-theme="light"]) .seg button[aria-pressed="true"]{background:#3A3B42;color:#fff}}
+:root[data-theme="dark"] .seg{background:rgba(255,255,255,.07)} :root[data-theme="dark"] .seg button[aria-pressed="true"]{background:#3A3B42;color:#fff}
+
+/* stat tiles: liquid-glass icon bubbles */
+.tiles{gap:14px}
+.tile{padding:16px 18px 18px;gap:8px}
+.tile .ic{width:40px;height:40px;border-radius:50%;position:relative;
+  border:2px solid rgba(255,255,255,.9);box-shadow:0 0 0 1px rgba(0,0,0,.04),0 8px 16px -6px var(--icg,rgba(47,123,245,.6)),inset 0 -4px 10px rgba(0,0,0,.12)}
+.tile .ic svg{width:18px;height:18px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.15))}
+.tiles .tile:nth-child(1) .ic{background:radial-gradient(circle at 50% 40%,#6BC3FF,#3A9BF5 60%,#A9D7FF 100%)!important;--icg:rgba(58,155,245,.6)}
+.tiles .tile:nth-child(2) .ic{background:radial-gradient(circle at 50% 40%,#FF7A9A,#F0476E 60%,#FFC0CF 100%)!important;--icg:rgba(240,71,110,.55)}
+.tiles .tile:nth-child(3) .ic{background:radial-gradient(circle at 50% 40%,#B78BFF,#8A5CF0 60%,#D9C6FF 100%)!important;--icg:rgba(138,92,240,.55)}
+.tiles .tile:nth-child(4) .ic{background:radial-gradient(circle at 50% 40%,#6EE59A,#2FBF6B 60%,#B8F2CD 100%)!important;--icg:rgba(47,191,107,.55)}
+.tile .v{font-size:30px;letter-spacing:-.03em}
+
+/* reel cards */
+.rlist{gap:14px}
+.rcard{padding:16px 18px 18px}
+.rtop .th,.rtop .nonum{border-radius:14px}
+.th{border-radius:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.04)}
+.rno{color:var(--accent)}
+.rc{background:var(--card2);box-shadow:inset 0 0 0 1px var(--cardb);padding:5px 10px}
+.rc.v{background:var(--accent-soft);color:var(--accent);box-shadow:none}
+.rc.g,.rc.o{box-shadow:none}
+.bar10{gap:4px}
+.bar10 i{height:7px;border-radius:99px}
+.cimg{border-radius:16px}
+.redit,.cps a,.pf a,.more{color:var(--accent)}
+
+/* buttons: white raised pills, black glossy primary */
+.pill{background:var(--card);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 16px -8px rgba(20,30,60,.25),inset 0 0 0 1px rgba(0,0,0,.04)}
+.btn{background:var(--card);border-radius:99px;box-shadow:0 1px 2px rgba(0,0,0,.05),0 8px 16px -8px rgba(20,30,60,.2)}
+.btn.pr{color:#fff;background:linear-gradient(180deg,#3A3A3E 0%,#0B0B0D 55%,#000 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 12px 22px -10px rgba(0,0,0,.6)}
+.lsx{background:var(--card2);box-shadow:inset 0 0 0 1px var(--cardb)}
+
+/* calendar */
+.cal{padding:16px 12px 12px}
+.calh .nav button{background:var(--card2);box-shadow:inset 0 0 0 1px var(--cardb);margin-left:6px}
+.day{border-radius:16px}
+.day.sel .dn{background:radial-gradient(circle at 50% 30%,#7DB6FB,#2F7BF5 70%);box-shadow:inset 0 0 0 2px rgba(255,255,255,.7),0 6px 12px -4px rgba(47,123,245,.6)}
+.mini{border-radius:9px}
+
+/* sheets */
+.lsbox{background:var(--cardg);border:1px solid var(--cardb);border-radius:30px 30px 0 0;box-shadow:inset 0 1px 0 var(--spec),0 -20px 50px -20px rgba(20,30,60,.3)}
+.sheet{background:var(--base);border-radius:30px 30px 0 0}
+.field input,.trow{border-radius:16px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.05)}
+.switch:checked{background:var(--accent)}
+.vbox video{border-radius:28px}
+
+@media (max-width:370px){.rings>svg{margin-left:0}}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .card::before{background:linear-gradient(160deg,rgba(255,255,255,.06),transparent 30%)}}
+:root[data-theme="dark"] .card::before{background:linear-gradient(160deg,rgba(255,255,255,.06),transparent 30%)}
