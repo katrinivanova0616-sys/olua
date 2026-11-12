@@ -123,7 +123,7 @@
     ['reels','Рилсы','<rect x="5" y="3" width="14" height="18" rx="3.5"/><path d="m10.5 9.2 4 2.8-4 2.8z" fill="currentColor"/>'],
     ['stats','Статистика','<path d="M5 20V12M10 20V6M15 20v-9M20 20V9"/>']];
   const NAMES={'Календарь':'cal','Статистика':'stats','Рилсы':'reels'};
-  function tagSections(){let cur='ov';[...main.children].forEach(c=>{const h=c.classList.contains('h2')&&c.querySelector('h2'); if(h&&NAMES[h.textContent.trim()]) cur=NAMES[h.textContent.trim()]; c.dataset.t=cur;});}
+  function tagSections(){let cur='ov',i=0,prev='';[...main.children].forEach(c=>{const h=c.classList.contains('h2')&&c.querySelector('h2'); if(h&&NAMES[h.textContent.trim()]) cur=NAMES[h.textContent.trim()]; c.dataset.t=cur; if(cur!==prev){i=0;prev=cur;} c.style.setProperty('--i',i++);});}
   tagSections();
   const bar=el('nav','xtabs'); bar.setAttribute('aria-label','Разделы');
   let tab='ov'; try{tab=localStorage.getItem('reelsTab')||'ov';}catch(e){}
@@ -137,6 +137,37 @@
     b.appendChild(el('span',null,n)); b.addEventListener('click',()=>setTab(k,true)); bar.appendChild(b);});
   document.body.appendChild(bar); document.body.classList.add('has-xtabs');
   setTab(tab,false);
+
+  /* 4. Live glass: cards tilt toward the pointer, a glare follows it, the rim light turns, the wallpaper drifts, controls lean in. */
+  const RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!RM){
+    const root=document.documentElement; let raf=0, last=null, cur=null;
+    const MAG='.xtabs button,.pill,.seg button,.calh .nav button,.lsx';
+    function frame(){raf=0; const e=last; if(!e) return;
+      root.style.setProperty('--px',((e.clientX/innerWidth-.5)*-18).toFixed(1)+'px');
+      root.style.setProperty('--py',((e.clientY/innerHeight-.5)*-18).toFixed(1)+'px');
+      const c=e.target.closest&&e.target.closest('.card');
+      if(cur&&cur!==c){cur.classList.remove('lit','tilt');cur.style.removeProperty('--rx');cur.style.removeProperty('--ry');}
+      cur=c;
+      if(c){const r=c.getBoundingClientRect(), x=(e.clientX-r.left)/r.width, y=(e.clientY-r.top)/r.height;
+        c.style.setProperty('--mx',(x*100).toFixed(1)+'%'); c.style.setProperty('--my',(y*100).toFixed(1)+'%');
+        c.style.setProperty('--ra',(Math.atan2(y-.5,x-.5)*180/Math.PI+90).toFixed(0)+'deg');
+        c.classList.add('lit');
+        if(e.pointerType==='mouse'&&(!c.classList.contains('rv')||c.classList.contains('in'))){
+          const k=Math.min(1,520/Math.max(r.height,1)); /* tall cards tilt less */
+          c.style.setProperty('--rx',((.5-y)*7*k).toFixed(2)+'deg'); c.style.setProperty('--ry',((x-.5)*8).toFixed(2)+'deg'); c.classList.add('tilt');}
+      }
+      document.querySelectorAll(MAG).forEach(b=>{const r=b.getBoundingClientRect(), cx=r.left+r.width/2, cy=r.top+r.height/2, dx=e.clientX-cx, dy=e.clientY-cy, d=Math.hypot(dx,dy);
+        if(e.pointerType==='mouse'&&d<Math.max(r.width,r.height)){b.style.setProperty('--tx',(dx*.18).toFixed(1)+'px');b.style.setProperty('--ty',(dy*.25).toFixed(1)+'px');b.classList.add('mag');}
+        else if(b.classList.contains('mag')){b.classList.remove('mag');b.style.removeProperty('--tx');b.style.removeProperty('--ty');}});
+    }
+    const move=e=>{last=e; if(!raf) raf=requestAnimationFrame(frame);};
+    addEventListener('pointermove',move,{passive:true});
+    addEventListener('pointerdown',e=>{move(e); const c=e.target.closest&&e.target.closest('.card'); if(c&&e.pointerType!=='mouse'){c.classList.add('press');}},{passive:true});
+    const up=()=>{document.querySelectorAll('.card.press').forEach(c=>c.classList.remove('press')); if(last&&last.pointerType!=='mouse'&&cur){cur.classList.remove('lit');}};
+    addEventListener('pointerup',up,{passive:true}); addEventListener('pointercancel',up,{passive:true});
+    document.addEventListener('pointerleave',()=>{if(cur){cur.classList.remove('lit','tilt');cur=null;} root.style.setProperty('--px','0px'); root.style.setProperty('--py','0px');});
+  }
 
   /* data */
   async function load(){try{const r=await fetch('state.json',{cache:'no-store'}); if(!r.ok) return; posts=collect(await r.json()); renderToday(); renderBest(); tagSections();}catch(e){}}

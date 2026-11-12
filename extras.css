@@ -72,3 +72,35 @@ body.has-xtabs{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .xtabs{--cardg:rgba(30,32,40,.78)}}
 :root[data-theme="dark"] .xtabs{--cardg:rgba(30,32,40,.78)}
 .xmore{appearance:none;border:0;background:none;width:100%;padding:10px 20px 2px;font:inherit;font-size:15px;font-weight:600;color:var(--accent);text-align:left;cursor:pointer}
+
+/* live glass */
+.card{--rim:linear-gradient(var(--ra,140deg),rgba(255,255,255,1),rgba(255,255,255,.25) 32%,rgba(255,255,255,.08) 55%,rgba(255,255,255,.7));
+  transition:transform .5s cubic-bezier(.2,.8,.2,1),box-shadow .4s,opacity .7s cubic-bezier(.2,.8,.2,1)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .card{--rim:linear-gradient(var(--ra,140deg),rgba(255,255,255,.5),rgba(255,255,255,.06) 32%,rgba(255,255,255,.02) 55%,rgba(255,255,255,.28))}}
+:root[data-theme="dark"] .card{--rim:linear-gradient(var(--ra,140deg),rgba(255,255,255,.5),rgba(255,255,255,.06) 32%,rgba(255,255,255,.02) 55%,rgba(255,255,255,.28))}
+.card::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;opacity:0;transition:opacity .45s;
+  background:radial-gradient(300px circle at var(--mx,50%) var(--my,0%),rgba(255,255,255,.95),rgba(205,228,255,.45) 35%,transparent 70%)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .card::after{background:radial-gradient(260px circle at var(--mx,50%) var(--my,0%),rgba(140,180,255,.22),rgba(255,255,255,.05) 40%,transparent 70%)}}
+:root[data-theme="dark"] .card::after{background:radial-gradient(260px circle at var(--mx,50%) var(--my,0%),rgba(140,180,255,.22),rgba(255,255,255,.05) 40%,transparent 70%)}
+.card.lit::after{opacity:1}
+.card.tilt{transform:perspective(1100px) rotateX(var(--rx,0)) rotateY(var(--ry,0)) translateY(-2px);transition:transform .18s ease-out,box-shadow .4s;
+  box-shadow:inset 0 1px 1px var(--spec),inset 0 -1px 1px var(--spec2),0 22px 50px -16px rgba(30,50,110,.28),0 2px 6px rgba(30,50,110,.06)}
+.card.press{transform:scale(.985);transition:transform .15s}
+.tile.tilt .ic{transform:translateZ(0) scale(1.08) rotate(-4deg);transition:transform .3s cubic-bezier(.3,1.6,.5,1)}
+.tile .ic{transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+body::before{transform:translate3d(var(--px,0),var(--py,0),0);transition:transform 1.2s cubic-bezier(.2,.8,.2,1)}
+.xtabs button,.pill,.seg button,.calh .nav button,.lsx{transition:transform .35s cubic-bezier(.2,.8,.2,1),background .2s,color .2s,box-shadow .2s}
+.mag{transform:translate(var(--tx,0),var(--ty,0))}
+.xtabs button.mag:active,.pill.mag:active{transform:translate(var(--tx,0),var(--ty,0)) scale(.94)}
+.rcard .ctile .cimg,.th{transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.ctile:hover .cimg,.post:hover .th,.next:hover .th,.xrow:hover .xth{transform:translateY(-3px) scale(1.04)}
+.xth{transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.day{transition:transform .25s cubic-bezier(.2,.8,.2,1),background .2s}
+.day:hover{transform:translateY(-2px)}
+.xbar i{transform-origin:bottom}
+.xbar:hover i{filter:brightness(1.08);transform:scaleY(1.04)}
+/* sections glide in when a tab opens */
+@keyframes xin{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+#viewList[data-tab]>[data-t]:not(.rv){animation:xin .55s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(var(--i,0)*60ms)}
+#viewList[data-tab]>.rv.in{animation:xin .55s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:calc(var(--i,0)*60ms)}
+@media (prefers-reduced-motion:reduce){.card.tilt,.mag{transform:none}#viewList[data-tab]>*{animation:none!important}}
