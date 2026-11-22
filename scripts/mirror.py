@@ -8,6 +8,23 @@ def get(path):
         return r.read()
 
 state = json.loads(get("/api/state"))
+
+# Copies Kati counts as posted although ARA marked them failed (22 Nov 2026).
+FORCED = "scripts/forced_published.json"
+if os.path.exists(FORCED):
+    import datetime as _dt
+    forced = set(json.load(open(FORCED, encoding="utf-8")).get("ids", []))
+    msk = _dt.timezone(_dt.timedelta(hours=3))
+    for r in state.get("reels", {}).values():
+        items = r.get("items") or []
+        hit = False
+        for x in items:
+            if x.get("id") in forced:
+                x["s"], x["err"], hit = "published", "", True
+        if hit:
+            pub = sorted((x for x in items if x.get("s") == "published" and x.get("t")), key=lambda x: x["t"])
+            days = [_dt.datetime.fromisoformat(x["t"].replace("Z", "+00:00")).astimezone(msk).strftime("%Y-%m-%d") for x in pub][:10]
+            r["posts"] = days + [""] * (10 - len(days))
 with open("state.json", "w", encoding="utf-8") as f:
     json.dump(state, f, ensure_ascii=False)
 
